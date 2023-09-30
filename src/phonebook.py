@@ -18,10 +18,8 @@ class Phonebook:
             if name not in self.entries:
                 self.entries[name] = number
                 return 'Registro adicionado'
-            else:
-                return "Nome e número não cadastrados"
-        else:
-            return "Nome ou número não é um valor válido"
+            return "Nome e número não cadastrados"
+        return "Nome ou número não é um valor válido"
 
     def lookup(self, name):
         """
@@ -85,7 +83,7 @@ class Phonebook:
         :return: return list with results of search
         """
         #foi incluída a validação para verificar se o nome é uma string
-        if isinstance(search_name, str):
+        if isinstance(search_name, str) and search_name is not None:
             for name, number in self.entries.items():
                 if search_name == name:
                     return f"Registro encontrado: {name}: {number}"
@@ -96,6 +94,7 @@ class Phonebook:
         """
         :return: return phonebook in sorted order
         """
+        #foi realizada a refatoração para criar uma lista de
         if self.entries == {}:
             return "Phonebook está vazio"
         else:
@@ -124,27 +123,36 @@ class Phonebook:
         :param name: String with name
         :return: return 'Numero deletado'
         """
-        self.entries.pop(name)
-        return 'Numero deletado'
+        if isinstance(name, str) and (name is not None):
+            if self.entries != {}:
+                if name in self.entries:
+                    self.entries.pop(name)
+                    return "Registro removido"
+                return "Registro não encontrado"
+            return "Phonebook está vazio"
+        return "Nome não pode ser invalido"
+
 
     def get_name_by_number(self, search_number):
         """
         Search all substring with search_name
-        :param search_name: string with name for search
+        :param search_number: string with number for search
         :return: return list with results of search
         """
-        for name, number in self.entries.items():
-            if search_number == number:
-                return f"Registro encontrado: {name}"
-        return "Registro não encontrado"
+        if isinstance(search_number, str) and (search_number is not None):
+            if self.entries != {}:
+                for name, number in self.entries.items():
+                    if search_number == number:
+                        return f"Registro encontrado: {name}"
+                return "Registro não encontrado"
+            return "Phonebook está vazio"
+        return "Número não pode ser invalido"
 
     def change_number(self, name, new_number):
         if name in self.entries:
             if new_number is not None:
                 self.entries[new_number] = self.entries.pop(name)
                 return "Número de telefone foi modificado"
-            else:
-                return "Não foi possível alterar número"
-        else:
             return "Não foi possível alterar número"
+        return "Não foi possivel encontrar o número"
 

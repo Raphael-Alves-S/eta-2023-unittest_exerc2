@@ -1,5 +1,6 @@
 from unittest import TestCase
 
+from main import phonebook
 from src.phonebook import Phonebook
 
 
@@ -29,6 +30,12 @@ class TestPhonebook(TestCase):
         phonebook = Phonebook()
         response = phonebook.add(None, "(11)9999-8888")
         self.assertEqual('Nome ou número não é um valor válido', response)
+
+    def test_add_duplicate(self):
+        phonebook = Phonebook()
+        phonebook.add("Tamires", "(81)9999-8888")
+        response = phonebook.add("Tamires", "(81)9999-8888")
+        self.assertEqual('Nome e número não cadastrados', response)
 
     def test_lookup_name_valid(self):
         phonebook = Phonebook()
@@ -109,6 +116,10 @@ class TestPhonebook(TestCase):
         phonebook = Phonebook()
         response = phonebook.search('Joao')
         self.assertEqual("Registro não encontrado", response)
+    def test_search_name_invalid(self):
+        phonebook = Phonebook()
+        response = phonebook.search(None)
+        self.assertEqual("Nome invalido", response)
 
     def test_phonebook_sorted(self):
         phonebook = Phonebook()
@@ -116,8 +127,83 @@ class TestPhonebook(TestCase):
         response = phonebook.get_phonebook_sorted()
         self.assertEqual([['BOMBEIRO', '193'], ['Maria', '(13)9999-99999'], ['POLICIA', '190']], response)
 
+    def test_phonebook_sorted_empty(self):
+        phonebook = Phonebook()
+        phonebook.clear()
+        response = phonebook.get_phonebook_sorted()
+        self.assertEqual("Phonebook está vazio", response)
+
     def test_phonebook_reverse(self):
         phonebook = Phonebook()
         phonebook.add("Maria", "(13)9999-99999")
         response = phonebook.get_phonebook_reverse()
         self.assertEqual([['POLICIA', '190'], ['Maria', '(13)9999-99999'], ['BOMBEIRO', '193']], response)
+
+    def test_phonebook_reverse_empty(self):
+        phonebook = Phonebook()
+        phonebook.clear()
+        response = phonebook.get_phonebook_reverse()
+        self.assertEqual("Phonebook está vazio", response)
+
+    def test_delete_user_successful(self):
+        phonebook = Phonebook()
+        phonebook.add("Maria", "(13)9999-99999")
+        response = phonebook.delete("Maria")
+        self.assertEqual("Registro removido", response)
+
+    def test_delete_user_notfound(self):
+        phonebook = Phonebook()
+        response = phonebook.delete("Maria")
+        self.assertEqual("Registro não encontrado", response)
+
+    def test_delete_user_empty(self):
+        phonebook = Phonebook()
+        phonebook.clear()
+        response = phonebook.delete("Maria")
+        self.assertEqual("Phonebook está vazio", response)
+
+    def test_delete_user_invalid_input(self):
+        phonebook = Phonebook()
+        response = phonebook.delete(None)
+        self.assertEqual("Nome não pode ser invalido", response)
+
+    def test_update_change_number(self):
+        phonebook = Phonebook()
+        phonebook.add("Camilla", "(92)98856-5346")
+        response = phonebook.change_number("Camilla", "(92)98546-5216")
+        self.assertEqual("Número de telefone foi modificado", response)
+
+    def test_change_number_none(self):
+        phonebook = Phonebook()
+        phonebook.add("Camilla", "(92)98856-5346")
+        response = phonebook.change_number("Camilla", None)
+        self.assertEqual("Não foi possível alterar número", response)
+
+    def test_change_number_notfound(self):
+        phonebook = Phonebook()
+        response = phonebook.change_number("Camilla", "(92)98856-5346")
+        self.assertEqual("Não foi possivel encontrar o número", response)
+
+    def test_get_name_by_number(self):
+        phonebook = Phonebook()
+        phonebook.add("Camilla", "(92)98856-5346")
+        response = phonebook.get_name_by_number("(92)98856-5346")
+        self.assertEqual("Registro encontrado: Camilla", response)
+
+    def test_get_name_by_number_none(self):
+        phonebook = Phonebook()
+        phonebook.add("Camilla", "(92)98856-5346")
+        response = phonebook.get_name_by_number(None)
+        self.assertEqual("Número não pode ser invalido", response)
+
+    def test_get_name_by_number_notfound(self):
+        phonebook = Phonebook()
+        response = phonebook.get_name_by_number("(92)98856-5346")
+        self.assertEqual("Registro não encontrado", response)
+        # caso número não tenha sido adicionado
+
+    def test_get_name_by_number_empty(self):
+        phonebook = Phonebook()
+        phonebook.clear()
+        response = phonebook.get_name_by_number("(92)98856-5346")
+        self.assertEqual("Phonebook está vazio", response)
